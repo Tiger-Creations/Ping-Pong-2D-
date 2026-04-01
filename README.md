@@ -5,7 +5,7 @@ A fun, addictive, stress-relieving 2d game of ping pong.
 
 ## Screenshot 📷
 
-![Ping Pong 2D Screenshot](C:\Users\Aarav\OneDrive\Pictures\pong.PNG)
+![Ping Pong 2D](pong.png)
 
 ## Game Controls 🎮
 
