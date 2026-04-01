@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ping Pong Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #000;
+            color: #fff;
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        canvas {
+            background: black;
+            margin-top: 20px;
+        }
+        .button {
+            margin-top: 15px;
+        }
+        button {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #3e8e41;
+        }
+        .control {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas" width="600" height="400"></canvas>
+    
+    <div class="button">
+        <button id="start-btn">Start</button>
+        <button id="pause-btn">Pause</button>
+        <button id="restart-btn">Restart</button>
+    </div>
+
+     <p class="control">Controls: Left Player (W/S) | Right Player (↑/↓)</p>
+
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        
+        let ball = { x: canvas.width/2, y: canvas.height/2, radius: 10, dx: 4, dy: 4 };
+        let paddleHeight = 80, paddleWidth = 10;
+        let leftY = (canvas.height - paddleHeight)/2;
+        let rightY = (canvas.height - paddleHeight)/2;
+        let leftScore = 0, rightScore = 0;
+        let upPressed = false, downPressed = false, wPressed = false, sPressed = false, running = false;
+
+        document.addEventListener("keydown", e => {
+            if(e.key === "ArrowUp") upPressed = true;
+            if(e.key === "ArrowDown") downPressed = true;
+            if(e.key === "w") wPressed = true;
+            if(e.key === "s") sPressed = true;
+        });
+
+        document.addEventListener("keyup", e => {
+            if(e.key === "ArrowUp") upPressed = false;
+            if(e.key === "ArrowDown") downPressed = false;
+            if(e.key === "w") wPressed = false;
+            if(e.key === "s") sPressed = false;
+        });
+
+        document.getElementById("start-btn").onclick = () => { running = true; loop(); };
+        document.getElementById("pause-btn").onclick = () => { running = false; };
+        document.getElementById("restart-btn").onclick = () => { location.reload(); };
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = "#fff";
+
+            // Ball
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Paddles
+            ctx.fillRect(0, leftY, paddleWidth, paddleHeight);
+            ctx.fillRect(canvas.width - paddleWidth, rightY, paddleWidth, paddleHeight);
+
+            // Scores
+            ctx.font = "20px Arial";
+            ctx.fillText(leftScore, canvas.width / 4, 20);
+            ctx.fillText(rightScore, canvas.width * 3 / 4, 20);
+        }
+
+        function update() {
+            if(wPressed && leftY > 0) leftY -= 6;
+            if(sPressed && leftY < canvas.height - paddleHeight) leftY += 6;
+
+            if(upPressed && rightY > 0) rightY -= 6;
+            if(downPressed && rightY < canvas.height - paddleHeight) rightY += 6;
+
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+            
+            if(ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) ball.dy *= -1;
+
+            if(ball.x - ball.radius < paddleWidth && ball.y > leftY && ball.y < leftY + paddleHeight) ball.dx *= -1;
+            if(ball.x + ball.radius > canvas.width - paddleWidth && ball.y > rightY && ball.y < rightY + paddleHeight) ball.dx *= -1;
+
+            if(ball.x < 0) { rightScore++; resetBall(); }
+            if(ball.x > canvas.width) { leftScore++; resetBall(); }
+        }
+
+        function resetBall() {
+            ball.x = canvas.width / 2;
+            ball.y = canvas.height / 2;
+        }
+
+        function loop() {
+            if(!running) return;
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+    </script>
+
+</body>
+</html>
